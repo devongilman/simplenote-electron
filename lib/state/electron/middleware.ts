@@ -45,8 +45,18 @@ export const middleware: S.Middleware = ({ dispatch, getState }) => {
         dispatch(actions.settings.decreaseFontSize());
         return;
 
+      case 'redo':
+        window?.editor.trigger('', 'redo');
+        return;
+
       case 'resetFontSize':
         dispatch(actions.settings.resetFontSize());
+        return;
+
+      case 'selectAll':
+        window?.editor.setSelection(
+          window?.editor.getModel().getFullModelRange()
+        );
         return;
 
       case 'setLineLength':
@@ -75,6 +85,10 @@ export const middleware: S.Middleware = ({ dispatch, getState }) => {
 
       case 'toggleSpellCheck':
         dispatch(actions.settings.toggleSpellCheck());
+        return;
+
+      case 'undo':
+        window?.editor.trigger('', 'undo');
         return;
 
       default:

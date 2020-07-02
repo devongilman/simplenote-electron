@@ -5,59 +5,70 @@
  */
 const { Menu, MenuItem } = require('electron');
 
+const { appCommandSender } = require('../menus/utils');
+
 module.exports = function (mainWindow) {
   mainWindow.webContents.on('context-menu', (event, params) => {
-    const menu = new Menu();
+    const { editFlags } = params;
 
-    const copy = new MenuItem({ label: 'Copy', role: 'copy' });
+    // // Add each spelling suggestion
+    // for (const suggestion of params.dictionarySuggestions) {
+    //   menu.append(
+    //     new MenuItem({
+    //       label: suggestion,
+    //       click: () => mainWindow.webContents.replaceMisspelling(suggestion),
+    //     })
+    //   );
+    // }
 
-    if (!params.isEditable) {
-      // If text is not editable, only permit the `Copy` action
-      menu.append(copy);
-    } else {
-      // Add each spelling suggestion
-      for (const suggestion of params.dictionarySuggestions) {
-        menu.append(
-          new MenuItem({
-            label: suggestion,
-            click: () => mainWindow.webContents.replaceMisspelling(suggestion),
-          })
-        );
-      }
+    // // Allow users to add the misspelled word to the dictionary
+    // if (params.misspelledWord) {
+    //   menu.append(new MenuItem({ type: 'separator' }));
+    //   menu.append(
+    //     new MenuItem({
+    //       label: 'Add to Dictionary',
+    //       click: () =>
+    //         mainWindow.webContents.session.addWordToSpellCheckerDictionary(
+    //           params.misspelledWord
+    //         ),
+    //     })
+    //   );
+    // }
 
-      // Allow users to add the misspelled word to the dictionary
-      if (params.misspelledWord) {
-        menu.append(new MenuItem({ type: 'separator' }));
-        menu.append(
-          new MenuItem({
-            label: 'Add to Dictionary',
-            click: () =>
-              mainWindow.webContents.session.addWordToSpellCheckerDictionary(
-                params.misspelledWord
-              ),
-          })
-        );
-      }
+    // if (params?.dictionarySuggestions?.length > 0) {
+    //   menu.append(new MenuItem({ type: 'separator' }));
+    // }
 
-      // If text is editable, permit the Select All, Cut, Copy and Paste actions
-      const cut = new MenuItem({ label: 'Cut', role: 'cut' });
-      const paste = new MenuItem({ label: 'Paste', role: 'paste' });
-      const selectAll = new MenuItem({
+    const template = [
+      {
+        id: 'selectAll',
         label: 'Select All',
-        role: 'selectAll',
-      });
-
-      const menuItems = [selectAll, cut, copy, paste];
-
-      if (params?.dictionarySuggestions?.length > 0) {
-        menu.append(new MenuItem({ type: 'separator' }));
-      }
-
-      for (const item of menuItems) {
-        menu.append(item);
-      }
-    }
-
-    menu.popup();
+        click: appCommandSender({ action: 'selectAll' }),
+        enabled: editFlags.canSelectAll,
+      },
+      {
+        id: 'cut',
+        label: 'Cut',
+        role: 'cut',
+        enabled: editFlags.canCut,
+      },
+      {
+        id: 'copy',
+        label: 'Copy',
+        role: 'copy',
+        enabled: editFlags.canCopy,
+      },
+      {
+        id: 'paste',
+        label: 'Paste',
+        role: 'paste',
+        enabled: editFlags.canPaste,
+      },
+      {
+        type: 'separator',
+      },
+    ];
+    const menu = Menu.buildFromTemplate(template);
+    menu.popup({});
   });
 };
