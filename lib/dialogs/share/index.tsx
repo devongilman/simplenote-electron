@@ -10,7 +10,7 @@ import TabPanels from '../../components/tab-panels';
 import PanelTitle from '../../components/panel-title';
 import ToggleControl from '../../controls/toggle';
 import actions from '../../state/actions';
-import { recordEvent } from '../../state/analytics/actions';
+import { recordEvent, withEvent } from '../../state/analytics/actions';
 
 import * as S from '../../state';
 import * as T from '../../types';
@@ -24,6 +24,11 @@ type StateProps = {
 };
 
 type DispatchProps = {
+  addCollaborator: (
+    noteId: T.EntityId,
+    tags: Array[T.Tag],
+    collaborator: string
+  ) => any;
   closeDialog: () => any;
   editNote: (noteId: T.EntityId, changes: Partial<T.Note>) => any;
   publishNote: (noteId: T.EntityId, shouldPublish: boolean) => any;
@@ -51,8 +56,8 @@ export class ShareDialog extends Component<Props> {
     const isSelf = this.props.settings.accountName === collaborator;
 
     if (collaborator !== '' && tags.indexOf(collaborator) === -1 && !isSelf) {
-      this.props.editNote(noteId, { tags: [...tags, collaborator] });
-      this.props.recordEvent('editor_note_collaborator_added');
+      this.props.addCollaborator(noteId, { tags: [...tags, collaborator] });
+      // this.props.recordEvent('editor_note_collaborator_added');
     }
   };
 
@@ -219,7 +224,11 @@ const mapDispatchToProps: S.MapDispatch<DispatchProps> = {
   closeDialog: actions.ui.closeDialog,
   editNote: actions.data.editNote,
   publishNote: actions.data.publishNote,
-  recordEvent: recordEvent,
+  recordEvent,
+  addCollaborator: (noteId, tags, collaborator) =>
+    withEvent('editor_note_collaborator_added')(
+      actions.data.editNote(noteId, { tags: [...tags, collaborator] })
+    ),
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShareDialog);

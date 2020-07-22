@@ -7,6 +7,17 @@ export const middleware: S.Middleware = (store) => {
   return (next) => (action: A.ActionType) => {
     const result = next(action);
 
+    /* catch-all meta used by redux components for these events:
+         - editor_note_collaborator_added
+         - editor_note_collaborator_removed
+         - importer_import_completed
+    */
+    if (action.meta?.analytics?.length) {
+      action.meta.analytics.forEach(([eventName, eventProperties]) =>
+        analytics.tracks.recordEvent(eventName, eventProperties)
+      );
+    }
+
     // @todo uncomment to ship, this breaks debugging :)
     // if (!window.sendAnalytics) {
     //   return result;
@@ -20,20 +31,6 @@ export const middleware: S.Middleware = (store) => {
     // - user_signed_in in boot.ts
 
     switch (action.type) {
-      /* catch-all action used by redux components for these events:
-         - editor_note_collaborator_added
-         - editor_note_collaborator_removed
-         - importer_import_completed
-      */
-      case 'RECORD_EVENT':
-        if (action.eventName) {
-          analytics.tracks.recordEvent(
-            action.eventName,
-            action.eventProperties
-          );
-        }
-        break;
-
       /* events that map to an action directly */
       case 'ADD_NOTE_TAG':
         analytics.tracks.recordEvent('editor_tag_added');
