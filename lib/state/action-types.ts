@@ -77,6 +77,10 @@ export type OpenRevision = Action<
 >;
 export type OpenTag = Action<'OPEN_TAG', { tagName: T.TagName }>;
 export type ReallyLogout = Action<'REALLY_LOGOUT'>;
+export type RecordEvent = Action<
+  'RECORD_EVENT',
+  { eventName: string; eventProperties?: T.JSONSerializable }
+>;
 export type RequestNotifications = Action<
   'REQUEST_NOTIFICATIONS',
   { sendNotifications: boolean }
@@ -328,6 +332,7 @@ export type ActionType =
   | PinNote
   | PublishNote
   | ReallyLogout
+  | RecordEvent
   | RemoteNoteUpdate
   | RemoteNoteDeleteForever
   | RemoteTagDelete

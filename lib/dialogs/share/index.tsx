@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { includes, isEmpty } from 'lodash';
 import MD5 from 'md5.js';
 
-import analytics from '../../analytics';
 import ClipboardButton from '../../components/clipboard-button';
 import isEmailTag from '../../utils/is-email-tag';
 import Dialog from '../../dialog';
@@ -11,6 +10,7 @@ import TabPanels from '../../components/tab-panels';
 import PanelTitle from '../../components/panel-title';
 import ToggleControl from '../../controls/toggle';
 import actions from '../../state/actions';
+import { recordEvent } from '../../state/analytics/actions';
 
 import * as S from '../../state';
 import * as T from '../../types';
@@ -27,6 +27,7 @@ type DispatchProps = {
   closeDialog: () => any;
   editNote: (noteId: T.EntityId, changes: Partial<T.Note>) => any;
   publishNote: (noteId: T.EntityId, shouldPublish: boolean) => any;
+  recordEvent: (eventName: string) => any;
 };
 
 type Props = StateProps & DispatchProps;
@@ -51,7 +52,7 @@ export class ShareDialog extends Component<Props> {
 
     if (collaborator !== '' && tags.indexOf(collaborator) === -1 && !isSelf) {
       this.props.editNote(noteId, { tags: [...tags, collaborator] });
-      analytics.tracks.recordEvent('editor_note_collaborator_added');
+      this.props.recordEvent('editor_note_collaborator_added');
     }
   };
 
@@ -62,7 +63,7 @@ export class ShareDialog extends Component<Props> {
     tags = tags.filter((tag) => tag !== collaborator);
 
     this.props.editNote(noteId, { tags });
-    analytics.tracks.recordEvent('editor_note_collaborator_removed');
+    this.props.recordEvent('editor_note_collaborator_removed');
   };
 
   collaborators = () => {
@@ -218,6 +219,7 @@ const mapDispatchToProps: S.MapDispatch<DispatchProps> = {
   closeDialog: actions.ui.closeDialog,
   editNote: actions.data.editNote,
   publishNote: actions.data.publishNote,
+  recordEvent: recordEvent,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShareDialog);
