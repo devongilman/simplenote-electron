@@ -10,7 +10,6 @@ import TabPanels from '../../components/tab-panels';
 import PanelTitle from '../../components/panel-title';
 import ToggleControl from '../../controls/toggle';
 import actions from '../../state/actions';
-import { recordEvent, withEvent } from '../../state/analytics/actions';
 
 import * as S from '../../state';
 import * as T from '../../types';
@@ -24,19 +23,11 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  addCollaborator: (
-    noteId: T.EntityId,
-    tags: Array<T.Tag>,
-    collaborator: string
-  ) => any;
+  addCollaborator: (noteId: T.EntityId, collaborator: T.TagName) => any;
   closeDialog: () => any;
   editNote: (noteId: T.EntityId, changes: Partial<T.Note>) => any;
   publishNote: (noteId: T.EntityId, shouldPublish: boolean) => any;
-  recordEvent: (eventName: string) => any;
-  removeCollaborator: (
-    noteId: T.EntityId,
-    tags: T.Brand<string, 'TagName'>[]
-  ) => any;
+  removeCollaborator: (noteId: T.EntityId, collaborator: T.TagName) => any;
 };
 
 type Props = StateProps & DispatchProps;
@@ -50,8 +41,7 @@ export class ShareDialog extends Component<Props> {
     isEmpty(url) ? undefined : `http://simp.ly/p/${url}`;
 
   onAddCollaborator = (event) => {
-    const { note, noteId } = this.props;
-    const tags = note?.tags || [];
+    const { noteId } = this.props;
     const collaborator = this.collaboratorElement.value.trim();
 
     event.preventDefault();
@@ -59,18 +49,15 @@ export class ShareDialog extends Component<Props> {
 
     const isSelf = this.props.settings.accountName === collaborator;
 
-    if (collaborator !== '' && tags.indexOf(collaborator) === -1 && !isSelf) {
-      this.props.addCollaborator(noteId, tags, collaborator);
+    if (collaborator !== '' && !isSelf) {
+      this.props.addCollaborator(noteId, collaborator);
     }
   };
 
   onRemoveCollaborator = (collaborator) => {
-    const { note, noteId } = this.props;
+    const { noteId } = this.props;
 
-    let tags = note?.tags || [];
-    tags = tags.filter((tag) => tag !== collaborator);
-
-    this.props.removeCollaborator(noteId, tags);
+    this.props.removeCollaborator(noteId, collaborator);
   };
 
   collaborators = () => {
@@ -223,18 +210,11 @@ const mapStateToProps: S.MapState<StateProps> = ({
 });
 
 const mapDispatchToProps: S.MapDispatch<DispatchProps> = {
+  addCollaborator: actions.data.addCollaborator,
   closeDialog: actions.ui.closeDialog,
   editNote: actions.data.editNote,
   publishNote: actions.data.publishNote,
-  recordEvent,
-  addCollaborator: (noteId, tags, collaborator) =>
-    withEvent('editor_note_collaborator_added')(
-      actions.data.editNote(noteId, { tags: [...tags, collaborator] })
-    ),
-  removeCollaborator: (noteId, tags) =>
-    withEvent('editor_note_collaborator_removed')(
-      actions.data.editNote(noteId, { tags: tags })
-    ),
+  removeCollaborator: actions.data.removeCollaborator,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShareDialog);

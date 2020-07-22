@@ -133,6 +133,10 @@ export type WindowResize = Action<'WINDOW_RESIZE', { innerWidth: number }>;
 /*
  * Data operations
  */
+export type AddCollaborator = Action<
+  'ADD_COLLABORATOR',
+  { noteId: T.EntityId; collaboratorAccount: T.TagName }
+>;
 export type AddNoteTag = Action<
   'ADD_NOTE_TAG',
   { noteId: T.EntityId; tagName: T.TagName }
@@ -170,6 +174,10 @@ export type PinNote = Action<
 export type PublishNote = Action<
   'PUBLISH_NOTE',
   { noteId: T.EntityId; shouldPublish: boolean }
+>;
+export type RemoveCollaborator = Action<
+  'REMOVE_COLLABORATOR',
+  { noteId: T.EntityId; collaboratorAccount: T.TagName }
 >;
 export type RemoveNoteTag = Action<
   'REMOVE_NOTE_TAG',
@@ -297,6 +305,7 @@ export type TagRefresh = Action<
 
 export type ActionType =
   | AcknowledgePendingChange
+  | AddCollaborator
   | AddNoteTag
   | ChangeConnectionStatus
   | CloseNote
@@ -338,6 +347,7 @@ export type ActionType =
   | RemoteNoteDeleteForever
   | RemoteTagDelete
   | RemoteTagUpdate
+  | RemoveCollaborator
   | RemoveNoteTag
   | RenameTag
   | ReorderTag

@@ -32,6 +32,9 @@ export const middleware: S.Middleware = (store) => {
 
     switch (action.type) {
       /* events that map to an action directly */
+      case 'ADD_COLLABORATOR':
+        analytics.tracks.recordEvent('editor_note_collaborator_added');
+        break;
       case 'ADD_NOTE_TAG':
         analytics.tracks.recordEvent('editor_tag_added');
         break;
@@ -52,6 +55,9 @@ export const middleware: S.Middleware = (store) => {
         break;
       case 'OPEN_TAG':
         analytics.tracks.recordEvent('list_tag_viewed');
+        break;
+      case 'REMOVE_COLLABORATOR':
+        analytics.tracks.recordEvent('editor_note_collaborator_removed');
         break;
       case 'REMOVE_NOTE_TAG':
         analytics.tracks.recordEvent('editor_tag_removed');
