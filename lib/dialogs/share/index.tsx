@@ -33,6 +33,10 @@ type DispatchProps = {
   editNote: (noteId: T.EntityId, changes: Partial<T.Note>) => any;
   publishNote: (noteId: T.EntityId, shouldPublish: boolean) => any;
   recordEvent: (eventName: string) => any;
+  removeCollaborator: (
+    noteId: T.EntityId,
+    tags: T.Brand<string, 'TagName'>[]
+  ) => any;
 };
 
 type Props = StateProps & DispatchProps;
@@ -66,8 +70,7 @@ export class ShareDialog extends Component<Props> {
     let tags = note?.tags || [];
     tags = tags.filter((tag) => tag !== collaborator);
 
-    this.props.editNote(noteId, { tags });
-    this.props.recordEvent('editor_note_collaborator_removed');
+    this.props.removeCollaborator(noteId, tags);
   };
 
   collaborators = () => {
@@ -227,6 +230,10 @@ const mapDispatchToProps: S.MapDispatch<DispatchProps> = {
   addCollaborator: (noteId, tags, collaborator) =>
     withEvent('editor_note_collaborator_added')(
       actions.data.editNote(noteId, { tags: [...tags, collaborator] })
+    ),
+  removeCollaborator: (noteId, tags) =>
+    withEvent('editor_note_collaborator_removed')(
+      actions.data.editNote(noteId, { tags: tags })
     ),
 };
 

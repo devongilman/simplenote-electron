@@ -8,7 +8,10 @@ export const withEvent = (
   ...action,
   meta: {
     ...action.meta,
-    analytics: [...action.meta.analytics, [eventName, eventProperties]],
+    analytics: [
+      ...(action.meta?.analytics ?? []),
+      [eventName, eventProperties],
+    ],
   },
 });
 
