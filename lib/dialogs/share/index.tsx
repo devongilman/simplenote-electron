@@ -26,7 +26,7 @@ type StateProps = {
 type DispatchProps = {
   addCollaborator: (
     noteId: T.EntityId,
-    tags: Array[T.Tag],
+    tags: Array<T.Tag>,
     collaborator: string
   ) => any;
   closeDialog: () => any;
@@ -56,8 +56,7 @@ export class ShareDialog extends Component<Props> {
     const isSelf = this.props.settings.accountName === collaborator;
 
     if (collaborator !== '' && tags.indexOf(collaborator) === -1 && !isSelf) {
-      this.props.addCollaborator(noteId, { tags: [...tags, collaborator] });
-      // this.props.recordEvent('editor_note_collaborator_added');
+      this.props.addCollaborator(noteId, tags, collaborator);
     }
   };
 
