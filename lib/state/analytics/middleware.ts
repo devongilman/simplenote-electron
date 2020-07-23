@@ -8,8 +8,6 @@ export const middleware: S.Middleware = (store) => {
     const result = next(action);
 
     /* catch-all meta used by redux components for these events:
-         - editor_note_collaborator_added
-         - editor_note_collaborator_removed
          - importer_import_completed
     */
     if (action.meta?.analytics?.length) {
@@ -17,11 +15,6 @@ export const middleware: S.Middleware = (store) => {
         analytics.tracks.recordEvent(eventName, eventProperties)
       );
     }
-
-    // @todo uncomment to ship, this breaks debugging :)
-    // if (!window.sendAnalytics) {
-    //   return result;
-    // }
 
     // @todo old events that have not been reimplemented in the rewrite:
     // - application_opened
