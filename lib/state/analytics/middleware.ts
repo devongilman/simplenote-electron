@@ -17,11 +17,10 @@ export const middleware: S.Middleware = (store) => {
     }
 
     // @todo old events that have not been reimplemented in the rewrite:
-    // - application_opened
+    // - application_opened -- we no longer have a preferencesLoaded action
 
     // @todo events that don't have a corresponding action and aren't in redux
     // - user_account_created in boot-without-auth.tsx
-    // - user_signed_in in boot.ts
 
     switch (action.type) {
       /* events that map to an action directly */
@@ -55,8 +54,7 @@ export const middleware: S.Middleware = (store) => {
       case 'REMOVE_NOTE_TAG':
         analytics.tracks.recordEvent('editor_tag_removed');
         break;
-      //   case 'RESTORE_NOTE':
-      case 'RESTORE_OPEN_NOTE': // @todo we never see RESTORE_NOTE for some reason
+      case 'RESTORE_OPEN_NOTE':
         analytics.tracks.recordEvent('editor_note_restored');
         break;
       case 'SEARCH':
@@ -70,6 +68,7 @@ export const middleware: S.Middleware = (store) => {
         analytics.tracks.recordEvent('list_trash_viewed');
         break;
       case 'setAccountName':
+        // @todo this gets called twice on login
         analytics.tracks.recordEvent('user_signed_in');
         break;
       case 'SHOW_DIALOG':
@@ -78,8 +77,7 @@ export const middleware: S.Middleware = (store) => {
         }
         break;
       // case 'DELETE_NOTE_FOREVER': @todo not sure if we should track this too?
-      //case 'TRASH_NOTE':
-      case 'TRASH_OPEN_NOTE': // @todo we never see TRASH_NOTE for some reason
+      case 'TRASH_OPEN_NOTE':
         analytics.tracks.recordEvent('editor_note_deleted');
         break;
       case 'TRASH_TAG':

@@ -36,7 +36,6 @@ type DispatchProps = {
   createNote: () => any;
   focusSearchField: () => any;
   openTagList: () => any;
-  setAccountName: (name: string) => any;
   setLineLength: (length: T.LineLength) => any;
   setNoteDisplay: (displayMode: T.ListDisplayMode) => any;
   setSortType: (sortType: T.SortType) => any;
@@ -186,7 +185,6 @@ const mapDispatchToProps: S.MapDispatch<DispatchProps> = (dispatch) => {
     createNote: () => dispatch(createNote()),
     focusSearchField: () => dispatch(actions.ui.focusSearchField()),
     openTagList: () => dispatch(toggleNavigation()),
-    setAccountName: (name) => dispatch(settingsActions.setAccountName(name)),
     setLineLength: (length) => dispatch(settingsActions.setLineLength(length)),
     setNoteDisplay: (displayMode) =>
       dispatch(settingsActions.setNoteDisplay(displayMode)),

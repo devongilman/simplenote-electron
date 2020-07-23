@@ -129,7 +129,6 @@ const run = (
     bootWithoutAuth(
       (token: string, username: string, createWelcomeNote: boolean) => {
         saveAccount(token, username);
-        analytics.tracks.recordEvent('user_signed_in');
         run(token, username, createWelcomeNote);
       }
     );
